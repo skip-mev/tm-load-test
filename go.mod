@@ -1,9 +1,10 @@
-module github.com/informalsystems/tm-load-test
+module github.com/skip-mev/tm-load-test
 
 go 1.20
 
 require (
 	github.com/gorilla/websocket v1.5.0
+	github.com/informalsystems/tm-load-test v1.3.0
 	github.com/prometheus/client_golang v1.16.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.9.3
@@ -30,3 +31,5 @@ require (
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/skip-mev/tm-load-test => ./
