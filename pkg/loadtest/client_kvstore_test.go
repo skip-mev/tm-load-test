@@ -54,7 +54,7 @@ func benchmarkKVStoreClient_GenerateTx(b *testing.B, cfg loadtest.Config) {
 		b.Errorf("Unexpected error from KVStoreClientFactory.NewClient(): %v", err)
 	}
 	for n := 0; n < b.N; n++ {
-		_, _ = client.GenerateTx()
+		_, _ = client.GenerateTx(0)
 	}
 }
 
@@ -113,7 +113,7 @@ func TestKVStoreClient(t *testing.T) {
 			if err != nil {
 				t.Errorf("Did not expect error in test case %d from factory.NewClient: %v", i, err)
 			}
-			tx, err := client.GenerateTx()
+			tx, err := client.GenerateTx(0)
 			if err != nil {
 				t.Errorf("Did not expect error in test case %d from client %d's GenerateTx: %v", i, c, err)
 			}

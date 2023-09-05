@@ -113,7 +113,7 @@ func requiredKVStoreSuffixLen(maxTxCount uint64) (int, error) {
 	return -1, fmt.Errorf("cannot cater for maximum tx count of %d (too many unique transactions)", maxTxCount)
 }
 
-func (c *KVStoreClient) GenerateTx() ([]byte, error) {
+func (c *KVStoreClient) GenerateTx(_ int) ([]byte, error) {
 	k := append(c.keyPrefix, []byte(randStr(c.keySuffixLen))...)
 	v := []byte(randStr(c.valueLen))
 	return append(k, append([]byte("="), v...)...), nil

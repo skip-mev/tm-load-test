@@ -22,6 +22,24 @@ const (
 	defaultProgressCallbackInterval = 5 * time.Second
 )
 
+// counter is an atomically incremented integer, default initialized value is safe to use
+type Counter struct {
+	counter int
+	mtx sync.RWMutex
+}
+
+func (c *Counter) Inc() {
+	c.mtx.Lock()
+	defer c.mtx.Unlock()
+	c.counter++
+}
+
+func (c *Counter) Value() int {
+	c.mtx.RLock()
+	defer c.mtx.RUnlock()
+	return c.counter
+}
+
 // Transactor represents a single wire-level connection to a Tendermint RPC
 // endpoint, and this is responsible for sending transactions to that endpoint.
 type Transactor struct {
@@ -45,6 +63,8 @@ type Transactor struct {
 	progressCallbackID       int                                      // A unique identifier for this transactor when calling the progress callback.
 	progressCallbackInterval time.Duration                            // How frequently to call the progress update callback.
 	progressCallback         func(id int, txCount int, txBytes int64) // Called with the total number of transactions executed so far.
+
+	batchCounter Counter
 
 	stopMtx sync.RWMutex
 	stop    bool
@@ -259,9 +279,11 @@ func (t *Transactor) sendTransactions() error {
 	var sentBytes int64
 	defer func() { t.trackSentTxs(sent, sentBytes) }()
 	t.logger.Info("Sending batch of transactions", "toSend", toSend)
+	// increment batch counter
+	t.batchCounter.Inc()
 	batchStartTime := time.Now()
 	for ; sent < toSend; sent++ {
-		tx, err := t.client.GenerateTx()
+		tx, err := t.client.GenerateTx(t.batchCounter.Value())
 		if err != nil {
 			return err
 		}

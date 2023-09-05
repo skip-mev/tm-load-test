@@ -17,7 +17,7 @@ type ClientFactory interface {
 type Client interface {
 	// GenerateTx must generate a raw transaction to be sent to the relevant
 	// broadcast_tx method for a given endpoint.
-	GenerateTx() ([]byte, error)
+	GenerateTx(batchNum int) ([]byte, error)
 }
 
 // Our global registry of client factories
